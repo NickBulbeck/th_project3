@@ -51,11 +51,12 @@
         </div>
 
         <div>
-          <label for="design">Design:</label>
-          <select id="design" name="user-design">
+<!-- Label of "Design" changed to "Theme" for better UX consistency -->
+          <label for="theme">Theme:</label>
+          <select id="theme" name="user-theme">
             <option>Select Theme</option>
-            <option value="js puns">Theme - JS Puns</option>
-            <option value="heart js">Theme - I &#9829; JS</option>
+            <option value="js_puns">Theme - JS Puns</option>
+            <option value="heart_js">Theme - I &#9829; JS</option>
           </select>
         </div>
 
@@ -68,6 +69,7 @@
             <option value="tomato">Tomato (I &#9829; JS shirt only)</option>
             <option value="steelblue">Steel Blue (I &#9829; JS shirt only)</option> 
             <option value="dimgrey">Dim Grey (I &#9829; JS shirt only)</option> 
+            <option value="cadburyspurple">Cadburys Purple (JS Puns and I &#9829; JS shirts)</option>
           </select>
         </div>                
       </fieldset>
@@ -171,8 +173,9 @@
     </form>
 
 	</div>
+  <script src="js/validations.js"></script>
   <script src="js/script.js"></script>
-  <script src="js/tdd.js"></script>
+  <script src="js/test_validations.js"></script>
 </body>
 </html>
 
