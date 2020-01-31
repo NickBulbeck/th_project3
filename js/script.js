@@ -26,11 +26,13 @@ const nameField = document.getElementById('name');
 const colorsAvailable = document.getElementById('colors-js-puns');
 const colorSelectList = document.getElementById('color');
 const submitButton = document.getElementsByTagName('BUTTON')[0];
-// The idea of the next object (which would be pat of a database in real life, probably) is to keep
+// The idea of the next object (which would be part of a database in real life, probably) is to keep
 // source data separate from the logic. The onColorSelect() function displays whatever is in this
 // object.
-// Not perfect yet, as it still needs a hard-coded correspondence between the key/values here and
-// the html for the corresponding divs (see id = "colors-js-puns") in index.html.
+// It still needs a hard-coded correspondence between the key/values here and the html for the
+// corresponding divs (see id = "colors-js-puns") in index.html; so it's not perfect. But since
+// I wanted to change the wording in the list options to remove the redundant references to the 
+// theme, this is at least a way of removing lots of hard-coded data from the function.
 const tShirtColors = {
 	js_puns: [["cornflowerblue","Corn Flower Blue"],
 					  ["darkslategrey","Dark Slate Grey"],

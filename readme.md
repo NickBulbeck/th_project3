@@ -20,3 +20,6 @@ comes before the tests and forms a kind of spec. It has a component (I use the t
 I'm validating and, possibly, one or more integration tests for combinations of elements - we'll see how that
 pans out. Then the test code file itself comes after it. Could combine these two.
 The actual code, which should not refer to any of the test functions, appears first.
+
+Note to self: there needs to be a "submit" eventListener attached to the form object. It then needs to
+run a' the validations together and output some kind of report.
