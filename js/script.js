@@ -23,6 +23,8 @@
 **************************************************************************************/
 const tShirtTheme = document.getElementById('theme');
 const nameField = document.getElementById('name');
+const jobRoleOtherInput = document.getElementById('jobRoleOtherInput');
+const jobRoleOtherLabel = document.getElementById('jobRoleOtherLabel');
 const colorsAvailable = document.getElementById('colors-js-puns');
 const colorSelectList = document.getElementById('color');
 const submitButton = document.getElementsByTagName('BUTTON')[0];
