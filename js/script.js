@@ -17,17 +17,24 @@
 
 	All this and much more!
 
-	Easter egg... not sure yet. But maybe, if you enter the name "Arthur Dent" you get
-	"you have been diverted...". Though that means not having a Douglas Adams button.
+	Easter egg... not sure yet. Current thinking is to have it replace all the text with 
+	Vogon poetry.
 
 **************************************************************************************/
 const tShirtTheme = document.getElementById('theme');
 const nameField = document.getElementById('name');
+const emailField = document.getElementById('email');
+const jobRoleList = document.getElementById('role');
 const jobRoleOtherInput = document.getElementById('jobRoleOtherInput');
 const jobRoleOtherLabel = document.getElementById('jobRoleOtherLabel');
 const colorsAvailable = document.getElementById('colors-js-puns');
 const colorSelectList = document.getElementById('color');
+const paymentOption = document.getElementById('payment');
+const paypalDiv = document.getElementById('paypal');
+const bitcoinDiv = document.getElementById('bitcoin');
+const creditcairdDiv = document.getElementById('credit-caird');
 const submitButton = document.getElementsByTagName('BUTTON')[0];
+
 // The idea of the next object (which would be part of a database in real life, probably) is to keep
 // source data separate from the logic. The onColorSelect() function displays whatever is in this
 // object.
@@ -46,9 +53,11 @@ const tShirtColors = {
 						 ["cadburyspurple","Cadbury's Purple"]]
 }
 
+let errors = {
+
+}
 
 /* BASIC INFO BOX
-	1) The first field should have focus automatically. Should be easy enough.
 	2) There's nothing in here about specific validations, so I'll just choose some:
 	 - First name and surname. Capitalisation is fixed automatically.
 	 - nae numbers in the name.
@@ -56,11 +65,43 @@ const tShirtColors = {
 */
 const setUpBasicInfo = () => {
 	nameField.focus();
+	jobRoleOtherInput.style.display = 'none';
+	jobRoleOtherLabel.style.display = 'none';
+	jobRoleList.addEventListener('change',onRoleSelect,false);
+	nameField.addEventListener('input',handleNameFieldInput,false);
+	emailField.addEventListener('input',handleEmailFieldInput,false);
 }
 
+const onRoleSelect = () => {
+	let role = jobRoleList.value;
+	if (role === 'other') {
+		jobRoleOtherInput.style.display = 'inherit';
+		jobRoleOtherInput.focus();
+		jobRoleOtherLabel.style.display = 'inherit';
+		jobRoleOtherLabel.textContent = 'Please state your job role here:';
+	}
+}
+
+const handleNameFieldInput = (event) => {
+	let inputSoFar = event.target.value;
+	if (!isValidName) {
+		console.log("Not a valid name yet...");
+	} else {
+		console.log("Yay! Name valid.");
+	}
+}
+
+const handleEmailFieldInput = (event) => {
+	let inputSoFar = event.target.value;
+	if (!isValidEmail) {
+		console.log("Not a valid email yet...");
+	} else {
+		console.log("Yay! Email valid.");
+	}
+}
 
 /*************************************************************** 
-	T-SHIRT BOX
+	T-SHIRT BOX: DONE
 ***************************************************************/
 
 const onColorSelect = (event) => {
@@ -102,12 +143,77 @@ const setUpTShirt = () => {
 	others.
 */
 
-/* PAYMENT OPTIONS 
+/* PAYMENT OPTIONS
 	1) Defaults to credit card
-	2) Which means that the other bits are hidden
-	3) When you change the selection, you display the relevant bit and hide the others
-
 */
+
+const setUpPaymentInfo = () => {
+	paymentOption.addEventListener('change',onPaymentOptionSelect,false)
+	paypalDiv.style.display = 'none';
+	bitcoinDiv.style.display = 'none';
+	document.getElementById('cc-num').addEventListener('input',creditCairdNumberInput,false);
+	document.getElementById('zip').addEventListener('input',zipCodeInput,false);
+	document.getElementById('cvv').addEventListener('input',cvvInput,false);
+}
+
+const creditCairdNumberInput = (event) => {
+	let inputSoFar = event.target.value;
+	if (!isValidCreditCairdNumber(inputSoFar)) {
+		console.log("Invalid...");
+	} else {
+		console.log("Yay! Credit caird valid.");
+	}
+}
+
+const zipCodeInput = (event) => {
+	let inputSoFar = event.target.value;
+	if (!isValidZipCode(inputSoFar)) {
+		console.log("Invalid...");
+	} else {
+		console.log("Yay! Zip code valid.");
+	}
+}
+
+const cvvInput = (event) => {
+	let inputSoFar = event.target.value;
+	if (!isValidCVV(inputSoFar)) {
+		console.log("Invalid...");
+	} else {
+		console.log("Yay! CVV valid.");
+	}
+}
+
+const onPaymentOptionSelect = () => {
+	let theUsersChoice = paymentOption.value;
+	const firstClearTheStage = () => {
+		bitcoinDiv.style.display = 'none';
+		creditcairdDiv.style.display = 'none';
+		document.getElementById('cc-num').value = '';
+		document.getElementById('zip').value = '';
+		document.getElementById('cvv').value = '';
+		paypalDiv.style.display = 'none';
+	}
+	const thenShow = {
+		'Bitcoin': function() {
+									bitcoinDiv.style.display = 'inherit';
+									bitcoinDiv.innerHTML = `<p>We'll take you to the Coinbase site to set up your billing information when you click "Register" below.</p>
+									  <p>All Bitcoin transactions will be final (because obviously).</p>`
+							 },
+		'PayPal': function() {
+								paypalDiv.style.display = 'inherit';
+								paypalDiv.firstElementChild.textContent = `We'll take you to Paypal's site to set up your billing information when you click “Register” below.`
+							},
+		'Credit Caird': function() {
+											creditcairdDiv.style.display = 'inherit';
+											document.getElementById('cc-num').focus();
+										},
+		'select method': function() {
+							  			creditcairdDiv.style.display = 'inherit'; // Keep this as the default
+										 }
+	}
+	firstClearTheStage();
+	thenShow[theUsersChoice]();
+}
 
 /* SUBMIT BUTTON
 	1) Error messages (if applicable) apply to the name, email, activity and credit-card fields
@@ -126,7 +232,7 @@ const onSubmitting = () => {
 }
 
 
-
+setUpPaymentInfo();
 setUpBasicInfo();
 setUpTShirt();
 

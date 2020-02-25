@@ -47,9 +47,9 @@ table {
   border-spacing: 0;
 }
 
-.clearfix::after { 
+/*.clearfix::after { 
    content: ""; 
    visibility:hidden;
    display: table; 
    clear: both;
-}
+}*/

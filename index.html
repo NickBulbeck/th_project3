@@ -24,10 +24,10 @@
         <input type="text" id="name" name="user-name">
         
         <label for="mail">Email:</label>
-        <input type="email" id="mail" name="user-email">
-        
-        <label for="title">Job Role</label>
-        <select id="title" name="user-title">
+        <input type="email" id="email" name="user-email">
+<!-- Note: I've removed references to 'title' in favour of consistent use of 'role' in the  elements below.-->
+        <label for="role">Job Role</label>
+        <select id="role" name="user-role">
           <option value="full-stack js developer">Full Stack JavaScript Developer</option>
           <option value="front-end developer">Front End Developer</option>
           <option value="back-end developer">Back End Developer</option>
@@ -35,8 +35,8 @@
           <option value="student">Student</option>
           <option value="other">Other</option>  
         </select>           
-        <label id = "otherLabel" for="jobRoleOtherLabel">If you selected 'Other', please state your job role here:</label>
-        <input type="text" id="jobRoleOtherInput" name="user-title-other">
+        <label id = "jobRoleOtherLabel" for="jobRoleOtherInput">If you selected 'Other', please state your job role here:</label>
+        <input type="text" id="jobRoleOtherInput" name="user-role-other">
       </fieldset>
       
       <fieldset class="shirt">
@@ -109,19 +109,18 @@
       </fieldset>
       <fieldset>
         <legend>Payment Info</legend>
-
+<!-- 'card' updated to the Scots 'caird', for cultural reasons. It's autistic humour (trust me.) -->
         <label for="payment">I'm going to pay with:</label>
         <select id="payment" name="user-payment">
-          <option value="select method">Select Payment Method</option>
-          <option value="Credit Card">Credit Card</option>
+          <option value="select method" selected>Select Payment Method</option>
+          <option value="Credit Caird">Credit Caird</option>
           <option value="PayPal">PayPal</option>
           <option value="Bitcoin">Bitcoin</option>
         </select>
-
-        <div id="credit-card" class="credit-card">
+        <div id="credit-caird" class="credit-caird">
 
           <div class="col-6 col">
-            <label for="cc-num">Card Number:</label>
+            <label for="cc-num">Caird Number:</label>
         	  <input id="cc-num" name="user-cc-num" type="text">
           </div>
 
