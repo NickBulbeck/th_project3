@@ -46,6 +46,16 @@ const isValidCVV = (input) => {
   and 'blur' events, btw. 'change' fires when you navigate away from the field. So does 'blur' - not sure what the
   difference between the two is.
 
+  Overall design for validations
+  - Need a tooltip class
+  - Once a field has focus, a tooltip appears below (or as looks correct) with instructions.
+  - It starts as amber. If and when an illegal character is entered, it goes red with a message.
+  - Each keystroke repeats the validation. The tooltip is green when the validation passes.
+  - When the field loses focus, the field colour stays but the tooltip for that field is hidden.
+  - But as it's hidden, it's also set up with any validation criteria that are failed.
+  - For instance, if you've been in then tab away without typing, you get a "cannae be blank" message.
+  - These validation criteria are added to an array.
+  - On submit, this array is displayed in a tooltip for the submit button.
 
 */
 
