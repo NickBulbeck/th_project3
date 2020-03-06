@@ -24,6 +24,9 @@
 const tShirtTheme = document.getElementById('theme');
 const nameField = document.getElementById('name');
 const emailField = document.getElementById('email');
+const creditCairdField = document.getElementById('cc-num');
+const zipCodeField = document.getElementById('zip');
+const cvvField = document.getElementById('cvv');
 const jobRoleList = document.getElementById('role');
 const jobRoleOtherInput = document.getElementById('jobRoleOtherInput');
 const jobRoleOtherLabel = document.getElementById('jobRoleOtherLabel');
@@ -54,7 +57,12 @@ const tShirtColors = {
 }
 
 let errors = {
-
+	nameErrors: [],
+	emailErrors: [],
+	activitiesError: false,
+	creditCairdErrors: [],
+	zipCodeErrors: [],
+	cvvErrors: []
 }
 
 /* BASIC INFO BOX
@@ -69,7 +77,9 @@ const setUpBasicInfo = () => {
 	jobRoleOtherLabel.style.display = 'none';
 	jobRoleList.addEventListener('change',onRoleSelect,false);
 	nameField.addEventListener('input',handleNameFieldInput,false);
+	nameField.addEventListener('blur',handleNameFieldBlur,false);
 	emailField.addEventListener('input',handleEmailFieldInput,false);
+	emailField.addEventListener('blur',handleEmailFieldBlur,false);
 }
 
 const onRoleSelect = () => {
@@ -83,22 +93,57 @@ const onRoleSelect = () => {
 }
 
 const handleNameFieldInput = (event) => {
-	let inputSoFar = event.target.value;
-	if (!isValidName) {
-		console.log("Not a valid name yet...");
+	const inputSoFar = nameField.value;
+	errors.nameErrors = [];
+	if (isValidUserName(inputSoFar)) {
+		nameField.style.backgroundColor = "#80ff80";
+	} else if (isBlank(inputSoFar)) {
+		errors.nameErrors.push("Name cannot be left blank.");
+		nameField.style.backgroundColor = "goldenrod";
 	} else {
-		console.log("Yay! Name valid.");
+		if (containsNumbers(inputSoFar)) {
+			errors.nameErrors.push("Name cannot contain numbers.");
+			nameField.style.backgroundColor = "goldenrod";
+		}
+		if (containsNonAlphaNumericExceptSpaces(inputSoFar)) {
+			errors.nameErrors.push("Name cannot contain non-alphanumeric characters.")
+			nameField.style.backgroundColor = "goldenrod";
+		}
+		if (containsOnlySpaces(inputSoFar)) {
+			errors.nameErrors.push("Name cannot contain only spaces.")
+			nameField.style.backgroundColor = "goldenrod";
+		}
+	}
+}
+
+const handleNameFieldBlur = (event) => {
+	const name = nameField.value;
+	if (!isValidUserName(name) && errors.nameErrors.length > 0) {
+		nameField.style.backgroundColor = "red";
 	}
 }
 
 const handleEmailFieldInput = (event) => {
-	let inputSoFar = event.target.value;
-	if (!isValidEmail) {
-		console.log("Not a valid email yet...");
+	errors.emailErrors = []
+	let inputSoFar = emailField.value;
+	if (isValidEmail(inputSoFar)) {
+		emailField.style.backgroundColor = "#80ff80";
+	} else if (isBlank(inputSoFar)) {
+		errors.emailErrors.push("Email cannot be left blank.");
+		emailField.style.backgroundColor = "goldenrod";
 	} else {
-		console.log("Yay! Email valid.");
+		errors.emailErrors.push("Email address is invalid.")
+		emailField.style.backgroundColor = "goldenrod";
 	}
 }
+
+const handleEmailFieldBlur = (event) => {
+	const email = emailField.value;
+	if (!isValidEmail(email) && errors.emailErrors.length > 0) {
+		emailField.style.backgroundColor = "red";
+	}
+}
+
 
 /*************************************************************** 
 	T-SHIRT BOX: DONE
@@ -151,41 +196,113 @@ const setUpPaymentInfo = () => {
 	paymentOption.addEventListener('change',onPaymentOptionSelect,false)
 	paypalDiv.style.display = 'none';
 	bitcoinDiv.style.display = 'none';
-	document.getElementById('cc-num').addEventListener('input',creditCairdNumberInput,false);
-	document.getElementById('zip').addEventListener('input',zipCodeInput,false);
-	document.getElementById('cvv').addEventListener('input',cvvInput,false);
+	document.getElementById('cc-num').addEventListener('input',handleCreditCairdNumberInput,false);
+	document.getElementById('cc-num').addEventListener('blur',handleCreditCairdFieldBlur ,false);
+	document.getElementById('zip').addEventListener('input',handleZipCodeInput,false);
+	document.getElementById('zip').addEventListener('blur',handleZipCodeFieldBlur,false);
+	document.getElementById('cvv').addEventListener('input',handleCVVinput,false);
+	document.getElementById('cvv').addEventListener('blur',handleCVVfieldBlur,false);
 }
 
-const creditCairdNumberInput = (event) => {
-	let inputSoFar = event.target.value;
-	if (!isValidCreditCairdNumber(inputSoFar)) {
-		console.log("Invalid...");
+const handleCreditCairdNumberInput = (event) => {
+	errors.creditCairdErrors = [];
+	creditCairdField.style.backgroundColor = "goldenrod";
+	let inputSoFar = creditCairdField.value;
+	if (isValidCreditCairdNumber(inputSoFar)) {
+		creditCairdField.style.backgroundColor = "#80ff80";
+	} else if (isBlank(inputSoFar)) {
+			errors.creditCairdErrors.push("Credit caird number cannot be left blank.");
 	} else {
-		console.log("Yay! Credit caird valid.");
+		if (containsLetters(inputSoFar)) {
+			errors.creditCairdErrors.push("Credit caird number cannot contain letters.");
+		}
+		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
+			errors.creditCairdErrors.push("Credit caird number cannot contain non-alphanumeric characters.")
+		}
+		if (hasTooFewDigits(inputSoFar,13)){
+			errors.creditCairdErrors.push("Credit caird number must have at least 13 digits (and not more than 16).");
+		}
+		if (hasTooManyDigits(inputSoFar,16)){
+			errors.creditCairdErrors.push("Credit caird number cannot have more than 16 digits.");
+		}
+	}
+	// console.log(`credit caird errors: ${errors.creditCairdErrors}`);
+}
+
+const handleCreditCairdFieldBlur = (event) => {
+	const number = creditCairdField.value;
+	console.log(`Number is ${number} and errors are ${errors.creditCairdErrors}`);
+	if (!isValidCreditCairdNumber(number) && errors.creditCairdErrors.length > 0) {
+		creditCairdField.style.backgroundColor = "red";
 	}
 }
 
-const zipCodeInput = (event) => {
-	let inputSoFar = event.target.value;
-	if (!isValidZipCode(inputSoFar)) {
-		console.log("Invalid...");
+
+const handleZipCodeInput = (event) => {
+	errors.zipCodeErrors = [];
+	let inputSoFar = zipCodeField.value;
+	zipCodeField.style.backgroundColor = "goldenrod";
+	if (isValidZipCode(inputSoFar)) {
+		zipCodeField.style.backgroundColor = "#80ff80";
 	} else {
-		console.log("Yay! Zip code valid.");
+		if (containsLetters(inputSoFar)) {
+			errors.zipCodeErrors.push("Zip Code cannot contain letters.");
+		}
+		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
+			errors.zipCodeErrors.push("Zip Code cannot contain non-alphanumeric characters.")
+		}
+		if (hasTooFewDigits(inputSoFar,13)){
+			errors.zipCodeErrors.push("Zip Code has fewer than 5 digits.");
+		}
+		if (hasTooManyDigits(inputSoFar,16)){
+			errors.zipCodeErrors.push("Zip Code has more than 5 digits.");
+		}
 	}
 }
 
-const cvvInput = (event) => {
-	let inputSoFar = event.target.value;
-	if (!isValidCVV(inputSoFar)) {
-		console.log("Invalid...");
+const handleZipCodeFieldBlur = (event) => {
+	const number = zipCodeField.value;
+	if (!isValidZipCode(number) && errors.zipCodeErrors.length > 0) {
+		zipCodeField.style.backgroundColor = "red";
+	}
+}
+
+
+const handleCVVinput = (event) => {
+	let inputSoFar = cvvField.value;
+	errors.cvvErrors = [];
+	cvvField.style.backgroundColor = "goldenrod";
+	if (isValidCVV(inputSoFar)) {
+		cvvField.style.backgroundColor = "#80ff80";
 	} else {
-		console.log("Yay! CVV valid.");
+		if (containsLetters(inputSoFar)) {
+			errors.cvvErrors.push("CVV cannot contain letters.");
+		}
+		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
+			errors.cvvErrors.push("CVV cannot contain non-alphanumeric characters.")
+		}
+		if (hasTooFewDigits(inputSoFar,13)){
+			errors.cvvErrors.push("CVV has fewer than 3 digits.");
+		}
+		if (hasTooManyDigits(inputSoFar,16)){
+			errors.cvvErrors.push("CVV has more than 3 digits.");
+		}
+	}
+}
+
+const handleCVVfieldBlur = (event) => {
+	const number = cvvField.value;
+	if (!isValidCVV(number) && errors.cvvErrors.length > 0) {
+		cvvField.style.backgroundColor = "red";
 	}
 }
 
 const onPaymentOptionSelect = () => {
 	let theUsersChoice = paymentOption.value;
 	const firstClearTheStage = () => {
+		errors.creditCairdErrors = [];
+		errors.zipCodeErrors = [];
+		errors.cvvErrors = [];
 		bitcoinDiv.style.display = 'none';
 		creditcairdDiv.style.display = 'none';
 		document.getElementById('cc-num').value = '';

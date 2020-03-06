@@ -46,33 +46,33 @@ const logTestOutput = () => {
 
 // Unit tests
 
-const test_validateUserName = () => {
+const test_isValidUserName = () => {
   let expected;
   let result;
   let actual;
   let report = [];
   // reject blank user name
-  actual = validateUserName("");
+  actual = isValidUserName("");
   expected = "Please enter your name";
-  result = assert_equals(expected,validateUserName(""));
-  report = [result,"validateUserName with blank name",expected,actual];
+  result = assert_equals(expected,isValidUserName(""));
+  report = [result,"isValidUserName with blank name",expected,actual];
   testOutput.push(report);
   // reject null user name
-  actual = validateUserName(null);
+  actual = isValidUserName(null);
   expected = "Please enter your name";
-  result = assert_equals(expected,validateUserName(null));
-  report = [result,"validateUserName with null name",expected,actual];
+  result = assert_equals(expected,isValidUserName(null));
+  report = [result,"isValidUserName with null name",expected,actual];
   testOutput.push(report);
   // reject user name with other than letters in it
-  actual = validateUserName('Nick5');
+  actual = isValidUserName('Nick5');
   expected = "Name should not contain non-alphabetic characters";
-  result = assert_equals(expected,validateUserName('Nick5'));
-  report = [result,"validateUserName with a number",expected,actual];
+  result = assert_equals(expected,isValidUserName('Nick5'));
+  report = [result,"isValidUserName with a number",expected,actual];
   testOutput.push(report);
-  actual = validateUserName('Nick!smith');
+  actual = isValidUserName('Nick!smith');
   expected = "Name should not contain non-alphabetic characters";
-  result = assert_equals(expected,validateUserName('Nick!smith'));
-  report = [result,"validateUserName with a special character",expected,actual];
+  result = assert_equals(expected,isValidUserName('Nick!smith'));
+  report = [result,"isValidUserName with a special character",expected,actual];
   testOutput.push(report);
 
 }
@@ -86,12 +86,12 @@ const test_validateUserName = () => {
 // for now: 
 
 const run_all_tests = () => {
-  test_validateUserName();
+  test_isValidUserName();
 
   logTestOutput();
 }
 
-run_all_tests();
+// run_all_tests();
 
 
 
