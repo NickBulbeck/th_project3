@@ -20,7 +20,7 @@ const isValidEmail = (input) => {
 
 const isValidCreditCairdNumber = (input) => {
 // Specification: between 13 and 16 digits inclusive
-  console.log(input + ", " + /^[0-9]{13,16}$/.test(input));
+  // console.log(input + ", " + /^[0-9]{13,16}$/.test(input));
   return /^[0-9]{13,16}$/.test(input);
 }
 
@@ -60,12 +60,14 @@ const containsNonAlphaNumericIncludingSpaces = (input) => {
 }
 
 const hasTooFewDigits = (input,minimum) => {
-  
-  return /^[0-9]{,minimum}$/.test(input);
+  const regex = new RegExp('^[0-9]{1,' + minimum + '}$');
+  return regex.test(input);
 }
 
 const hasTooManyDigits = (input,maximum) => {
-  return /^[0-9]{maximum,}$/.test(input);
+  maximum++;
+  const regex = new RegExp('^[0-9]{' + maximum + ',}$');
+  return regex.test(input);
 }
 
 /*

@@ -24,3 +24,12 @@ The actual code, which should not refer to any of the test functions, appears fi
 Note to self: there needs to be a "submit" eventListener attached to the form object. It then needs to
 run a' the validations together and output some kind of report.
 
+******************************************
+  NEXT FEATURES
+******************************************
+- Fix the red background in the credit caird fields if you put errors, select another option, then select credit caird again
+- Create a tool-tip popup div, with a show/hide function for it, that can contain the errors
+- Show it while you're typing, hide it when you move away.
+- On submit: Show all the errors, with an additional yin for the Submit button itself saying ye cannae submit while there's errors.
+- The checkboxes:
+ - 

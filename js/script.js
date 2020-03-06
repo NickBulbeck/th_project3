@@ -220,18 +220,16 @@ const handleCreditCairdNumberInput = (event) => {
 			errors.creditCairdErrors.push("Credit caird number cannot contain non-alphanumeric characters.")
 		}
 		if (hasTooFewDigits(inputSoFar,13)){
-			errors.creditCairdErrors.push("Credit caird number must have at least 13 digits (and not more than 16).");
+			errors.creditCairdErrors.push("Credit caird number has fewer than 13 digits.");
 		}
 		if (hasTooManyDigits(inputSoFar,16)){
-			errors.creditCairdErrors.push("Credit caird number cannot have more than 16 digits.");
+			errors.creditCairdErrors.push("Credit caird number has more than 16 digits.");
 		}
 	}
-	// console.log(`credit caird errors: ${errors.creditCairdErrors}`);
 }
 
 const handleCreditCairdFieldBlur = (event) => {
 	const number = creditCairdField.value;
-	console.log(`Number is ${number} and errors are ${errors.creditCairdErrors}`);
 	if (!isValidCreditCairdNumber(number) && errors.creditCairdErrors.length > 0) {
 		creditCairdField.style.backgroundColor = "red";
 	}
@@ -251,10 +249,10 @@ const handleZipCodeInput = (event) => {
 		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
 			errors.zipCodeErrors.push("Zip Code cannot contain non-alphanumeric characters.")
 		}
-		if (hasTooFewDigits(inputSoFar,13)){
+		if (hasTooFewDigits(inputSoFar,5)){
 			errors.zipCodeErrors.push("Zip Code has fewer than 5 digits.");
 		}
-		if (hasTooManyDigits(inputSoFar,16)){
+		if (hasTooManyDigits(inputSoFar,5)){
 			errors.zipCodeErrors.push("Zip Code has more than 5 digits.");
 		}
 	}
@@ -281,10 +279,10 @@ const handleCVVinput = (event) => {
 		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
 			errors.cvvErrors.push("CVV cannot contain non-alphanumeric characters.")
 		}
-		if (hasTooFewDigits(inputSoFar,13)){
+		if (hasTooFewDigits(inputSoFar,3)){
 			errors.cvvErrors.push("CVV has fewer than 3 digits.");
 		}
-		if (hasTooManyDigits(inputSoFar,16)){
+		if (hasTooManyDigits(inputSoFar,3)){
 			errors.cvvErrors.push("CVV has more than 3 digits.");
 		}
 	}
@@ -330,6 +328,7 @@ const onPaymentOptionSelect = () => {
 	}
 	firstClearTheStage();
 	thenShow[theUsersChoice]();
+	console.log(`errors: ${errors.creditCairdErrors}, ${errors.zipCodeErrors}, ${errors.cvvErrors}`);
 }
 
 /* SUBMIT BUTTON
