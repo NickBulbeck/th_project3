@@ -144,6 +144,22 @@ option {
 	background-color: crimson;
 }
 
+.error-display {
+	width: 100%;
+	border: 2px red solid;
+	border-radius: 3px;
+	background-color: #e0e0e0;
+	color: red;
+	min-height: 30px;
+	margin: -1em 0 1.125em 0;
+	padding: 0.8em;
+}
+
+.error-display p {
+	margin-bottom: 0.25em;
+	font-weight: bold;
+}
+
 /* ================================= 
   Page Styles
 ==================================== */
