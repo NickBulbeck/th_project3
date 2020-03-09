@@ -33,3 +33,8 @@ run a' the validations together and output some kind of report.
 - On submit: Show all the errors, with an additional yin for the Submit button itself saying ye cannae submit while there's errors.
 - The checkboxes:
  - 
+
+
+
+
+ 
