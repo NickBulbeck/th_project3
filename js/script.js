@@ -37,6 +37,8 @@ const paypalDiv = document.getElementById('paypal');
 const bitcoinDiv = document.getElementById('bitcoin');
 const creditcairdDiv = document.getElementById('credit-caird');
 const submitButton = document.getElementsByTagName('BUTTON')[0];
+const activitiesFieldset = document.getElementsByClassName('activities')[0];
+const activities = activitiesFieldset.getElementsByTagName('input');
 
 // The idea of the next object (which would be part of a database in real life, probably) is to keep
 // source data separate from the logic. The onColorSelect() function displays whatever is in this
@@ -141,6 +143,7 @@ const handleEmailFieldBlur = (event) => {
 	const email = emailField.value;
 	if (!isValidEmail(email) && errors.emailErrors.length > 0) {
 		emailField.style.backgroundColor = "red";
+		emailField.classList.add('is-invalid');
 	}
 }
 
@@ -178,15 +181,71 @@ const setUpTShirt = () => {
 	2) When anything is checked, any conflicting activity is disabled.
 	3) When it is unchecked, the conflicting activity is re-enabled.
 
-	The event-handler is on the form. You need to know the event target, and all the others.
-	If it's disabled, you do nothing. BTW - just disabling it should re-style it. Just set
-	element.disabled=true. If the handler is on the form, I might need to test what happens
-	here and test for disabled.
-	So, you check a box: then you disable everything else with the same time.
-	BUT you UN-check a box: what then? With the existing data, there are only two possible 
-	clashes. So, could have two click handlers; one for a potential clash and one for the
-	others.
+	Have an array of all the checkboxes.
+	ToDo: add click event handler to the form
+
 */
+
+const setUpActivities = () => {
+	activitiesFieldset.addEventListener('click',handleActivitiesClick,false);
+	for (let i=0; i<activities.length; i++) {
+		const costString = activities[i].dataset.cost;
+		const cost = costString.replace('$','');
+		// console.log(`${cost}, ${parseInt(cost)}`);
+	}
+}
+
+const handleActivitiesClick = (event) => {
+	const target = event.target;
+	detectClashingActivities(target);
+	const cost = calculateCost();
+	errors.activitiesError = setCostDivDisplay(cost);
+
+}
+
+const detectClashingActivities = (activity) => {
+	const timeSlot = activity.dataset.dayAndTime;
+	for (let i=0; i<activities.length; i++) {
+		if (activities[i] === activity) {
+			continue;
+		}
+		if (activities[i].dataset.dayAndTime === timeSlot) {
+			if (activity.checked) {
+				activities[i].disabled = true;
+				activities[i].parentNode.classList.add('disabled');
+			} else {
+				activities[i].disabled = false;
+				activities[i].parentNode.classList.remove('disabled');
+			}
+		}
+	}
+}
+
+const calculateCost = () => {
+	let cost = 0;
+	for (let i=0; i<activities.length; i++) {
+		const activity = activities[i];
+		if (activity.checked) {
+			cost += parseInt(activity.dataset.cost.replace('$',''));
+		}
+	}
+	return cost;
+}
+
+const setCostDivDisplay = (cost) => {
+	const div = document.getElementById('costDiv');
+	if (div) { 
+		div.parentNode.removeChild(div);
+	}
+	if (cost === 0) {
+		return false;
+	}
+	let costDiv = document.createElement('DIV');
+	costDiv.setAttribute('id','costDiv');
+	costDiv.classList.add('cost-display');
+	costDiv.textContent = `Total cost of activities: \$${cost}`;
+	activitiesFieldset.appendChild(costDiv);
+}
 
 /* PAYMENT OPTIONS
 	1) Defaults to credit card
@@ -351,7 +410,7 @@ const onSubmitting = () => {
 setUpPaymentInfo();
 setUpBasicInfo();
 setUpTShirt();
-
+setUpActivities();
 
 
 

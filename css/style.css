@@ -160,6 +160,21 @@ option {
 	font-weight: bold;
 }
 
+.cost-display {
+	width: 100%;
+	border: 2px #6f9ddc solid;
+	border-radius: 3px;
+	background-color: #cde0fb;
+	min-height: 30px;
+	margin: 0 0 0.75em 0;
+	padding: 0.8em;
+	color: black;
+}
+
+.disabled {
+	opacity: 0.5;
+}
+
 /* ================================= 
   Page Styles
 ==================================== */
