@@ -67,6 +67,31 @@ let errors = {
 	cvvErrors: []
 }
 
+/*************************************************************** 
+	GENERIC ERROR PROCESSING
+***************************************************************/
+
+const clearErrorsDiv = (parentNode) => {
+	if (parentNode.querySelector('.error-display')) {
+		const defunct = parentNode.querySelector('.error-display');
+		parentNode.removeChild(defunct);
+	}
+}
+
+
+const displayErrorsDiv = (parentNode,errorList) => {
+	if (errorList.length === 0) {
+		return null;
+	}
+	const errorsDiv = document.createElement('DIV');
+	errorsDiv.classList.add('error-display');
+	for (let i=0; i<errorList.length; i++) {
+		errorsDiv.innerHTML += `<p>${errorList[i]}</p>`;
+	}
+	parentNode.appendChild(errorsDiv);
+}
+
+
 /* BASIC INFO BOX
 	2) There's nothing in here about specific validations, so I'll just choose some:
 	 - First name and surname. Capitalisation is fixed automatically.
@@ -99,6 +124,7 @@ const handleNameFieldInput = (event) => {
 	errors.nameErrors = [];
 	if (isValidUserName(inputSoFar)) {
 		nameField.style.backgroundColor = "#80ff80";
+		clearErrorsDiv(nameField.parentNode);
 	} else if (isBlank(inputSoFar)) {
 		errors.nameErrors.push("Name cannot be left blank.");
 		nameField.style.backgroundColor = "goldenrod";
@@ -116,12 +142,16 @@ const handleNameFieldInput = (event) => {
 			nameField.style.backgroundColor = "goldenrod";
 		}
 	}
+	clearErrorsDiv(nameField.parentNode);
+	displayErrorsDiv(nameField.parentNode,errors.nameErrors);
 }
 
 const handleNameFieldBlur = (event) => {
+	clearErrorsDiv(nameField.parentNode);
 	const name = nameField.value;
 	if (!isValidUserName(name) && errors.nameErrors.length > 0) {
 		nameField.style.backgroundColor = "red";
+		displayErrorsDiv(nameField.parentNode,errors.nameErrors);
 	}
 }
 
@@ -149,7 +179,7 @@ const handleEmailFieldBlur = (event) => {
 
 
 /*************************************************************** 
-	T-SHIRT BOX: DONE
+	T-SHIRT BOX
 ***************************************************************/
 
 const onColorSelect = (event) => {
@@ -405,6 +435,7 @@ const onSubmitting = () => {
 		iii) CVV should be a 3-digit number
 	*/
 }
+
 
 
 setUpPaymentInfo();

@@ -11,7 +11,7 @@ everything in here.
 const isValidUserName = (input) => {
 // Specification: must not be blank (or all spaces), and must contain only
 // letters and spaces. The validation is case-insensitive.
-    return /^[a-zA-Z ]+$/.test(input) && !/^ $/.test(input);
+    return /^[a-zA-Z ]+$/.test(input) && !/^ +$/.test(input);
 }
 
 const isValidEmail = (input) => {
@@ -39,7 +39,7 @@ const isBlank = (input) => {
 }
 
 const containsOnlySpaces = (input) => {
-  return /^ $/.test(input);
+  return /^ +$/.test(input);
 }
 
 const containsLetters = (input) => {
