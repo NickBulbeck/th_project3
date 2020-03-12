@@ -61,34 +61,47 @@ const tShirtColors = {
 let errors = {
 	nameErrors: [],
 	emailErrors: [],
-	activitiesError: false,
+	activitiesError: [],
 	creditCairdErrors: [],
 	zipCodeErrors: [],
-	cvvErrors: []
+	cvvErrors: [],
+}
+
+const thereAreErrors = () => {
+	for (let [key,value] of Object.entries(errors)) { // yes, I had to look that up
+		if (value.length > 0) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /*************************************************************** 
 	GENERIC ERROR PROCESSING
 ***************************************************************/
 
-const clearErrorsDiv = (parentNode) => {
-	if (parentNode.querySelector('.error-display')) {
-		const defunct = parentNode.querySelector('.error-display');
-		parentNode.removeChild(defunct);
+const clearErrorsDiv = (errorCategory) => {
+	//test
+	const obsoleteDiv = document.getElementById(errorCategory);
+	if (obsoleteDiv) {
+		obsoleteDiv.parentNode.removeChild(obsoleteDiv);
 	}
 }
 
-
-const displayErrorsDiv = (parentNode,errorList) => {
-	if (errorList.length === 0) {
+const displayErrorsDiv = (nodeOfInterest,errorCategory) => {
+	clearErrorsDiv(errorCategory);
+	const listOfErrors = errors[errorCategory];
+	if (listOfErrors.length === 0) {
 		return null;
 	}
+	const referenceNode = nodeOfInterest.nextElementSibling;
 	const errorsDiv = document.createElement('DIV');
+	errorsDiv.setAttribute('id',errorCategory);
 	errorsDiv.classList.add('error-display');
-	for (let i=0; i<errorList.length; i++) {
-		errorsDiv.innerHTML += `<p>${errorList[i]}</p>`;
+	for (let i=0; i<listOfErrors.length; i++) {
+		errorsDiv.innerHTML += `<p>${listOfErrors[i]}</p>`;
 	}
-	parentNode.appendChild(errorsDiv);
+	nodeOfInterest.parentNode.insertBefore(errorsDiv,referenceNode);
 }
 
 
@@ -114,8 +127,8 @@ const onRoleSelect = () => {
 	if (role === 'other') {
 		jobRoleOtherInput.style.display = 'inherit';
 		jobRoleOtherInput.focus();
+		jobRoleOtherInput.placeholder = `(Leave blank if you don't wish to state your role)`;
 		jobRoleOtherLabel.style.display = 'inherit';
-		jobRoleOtherLabel.textContent = 'Please state your job role here:';
 	}
 }
 
@@ -142,8 +155,7 @@ const handleNameFieldInput = (event) => {
 			nameField.style.backgroundColor = "goldenrod";
 		}
 	}
-	clearErrorsDiv(nameField.parentNode);
-	displayErrorsDiv(nameField.parentNode,errors.nameErrors);
+	displayErrorsDiv(nameField,"nameErrors");
 }
 
 const handleNameFieldBlur = (event) => {
@@ -151,7 +163,6 @@ const handleNameFieldBlur = (event) => {
 	const name = nameField.value;
 	if (!isValidUserName(name) && errors.nameErrors.length > 0) {
 		nameField.style.backgroundColor = "red";
-		displayErrorsDiv(nameField.parentNode,errors.nameErrors);
 	}
 }
 
@@ -167,6 +178,7 @@ const handleEmailFieldInput = (event) => {
 		errors.emailErrors.push("Email address is invalid.")
 		emailField.style.backgroundColor = "goldenrod";
 	}
+	displayErrorsDiv(emailField,"emailErrors");
 }
 
 const handleEmailFieldBlur = (event) => {
@@ -221,16 +233,20 @@ const setUpActivities = () => {
 	for (let i=0; i<activities.length; i++) {
 		const costString = activities[i].dataset.cost;
 		const cost = costString.replace('$','');
-		// console.log(`${cost}, ${parseInt(cost)}`);
 	}
 }
 
 const handleActivitiesClick = (event) => {
+	errors.activitiesError = [];
 	const target = event.target;
 	detectClashingActivities(target);
 	const cost = calculateCost();
-	errors.activitiesError = setCostDivDisplay(cost);
-
+	console.log(`errors.activitiesError before: ${errors.activitiesError}`)
+	if (!setCostDivDisplay(cost)) {
+		errors.activitiesError.push("You must select one or more activities.");
+	}
+	console.log(`errors.activitiesError after: ${errors.activitiesError}`)
+	displayErrorsDiv(activitiesFieldset,"activitiesError");
 }
 
 const detectClashingActivities = (activity) => {
@@ -275,6 +291,7 @@ const setCostDivDisplay = (cost) => {
 	costDiv.classList.add('cost-display');
 	costDiv.textContent = `Total cost of activities: \$${cost}`;
 	activitiesFieldset.appendChild(costDiv);
+	return true;
 }
 
 /* PAYMENT OPTIONS
@@ -315,6 +332,7 @@ const handleCreditCairdNumberInput = (event) => {
 			errors.creditCairdErrors.push("Credit caird number has more than 16 digits.");
 		}
 	}
+	displayErrorsDiv(creditCairdField,"creditCairdErrors");
 }
 
 const handleCreditCairdFieldBlur = (event) => {
@@ -345,6 +363,7 @@ const handleZipCodeInput = (event) => {
 			errors.zipCodeErrors.push("Zip Code has more than 5 digits.");
 		}
 	}
+	displayErrorsDiv(zipCodeField,"zipCodeErrors");
 }
 
 const handleZipCodeFieldBlur = (event) => {
@@ -375,6 +394,7 @@ const handleCVVinput = (event) => {
 			errors.cvvErrors.push("CVV has more than 3 digits.");
 		}
 	}
+	displayErrorsDiv(cvvField,"cvvErrors");
 }
 
 const handleCVVfieldBlur = (event) => {
@@ -425,17 +445,9 @@ const onPaymentOptionSelect = () => {
 	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger.
 */
 const onSubmitting = () => {
-	/* Validations are called fae here. MVP:
-	1) Name cannae be blank
-	2) Email must be a valid email address
-	3) At least one checkbox fae Register for activities selected
-	4) Iff payment option is credit caird:
-		i) Credit Caird field should be a number with 13-16 digits
-		ii) Zip Code should be 5-digit number... I'm thinking of making this a post code
-		iii) CVV should be a 3-digit number
-	*/
-}
 
+
+}
 
 
 setUpPaymentInfo();
