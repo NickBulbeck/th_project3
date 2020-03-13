@@ -39,6 +39,7 @@ const creditcairdDiv = document.getElementById('credit-caird');
 const submitButton = document.getElementsByTagName('BUTTON')[0];
 const activitiesFieldset = document.getElementsByClassName('activities')[0];
 const activities = activitiesFieldset.getElementsByTagName('input');
+const form = document.getElementsByTagName('form')[0];
 
 // The idea of the next object (which would be part of a database in real life, probably) is to keep
 // source data separate from the logic. The onColorSelect() function displays whatever is in this
@@ -437,16 +438,20 @@ const onPaymentOptionSelect = () => {
 	}
 	firstClearTheStage();
 	thenShow[theUsersChoice]();
-	console.log(`errors: ${errors.creditCairdErrors}, ${errors.zipCodeErrors}, ${errors.cvvErrors}`);
 }
 
 /* SUBMIT BUTTON
 	1) Error messages (if applicable) apply to the name, email, activity and credit-card fields
 	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger.
 */
-const onSubmitting = () => {
-
-
+const onSubmitting = (event) => {
+	// refactor all the event handlers: pull out the validating code into separate functions
+	// call those functions from within the event handlers
+	// make sure that errorDivDisplay is called from within them too
+	// then call the same functions from here
+	event.preventDefault();
+	console.log(`submitting: ${form}`);
+	// console.log()
 }
 
 
@@ -454,6 +459,9 @@ setUpPaymentInfo();
 setUpBasicInfo();
 setUpTShirt();
 setUpActivities();
+
+form.addEventListener("submit",onSubmitting,false);
+
 
 
 
