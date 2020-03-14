@@ -44,38 +44,41 @@ const form = document.getElementsByTagName('form')[0];
 // The idea of the next object (which would be part of a database in real life, probably) is to keep
 // source data separate from the logic. The onColorSelect() function displays whatever is in this
 // object.
-// It still needs a hard-coded correspondence between the key/values here and the html for the
-// corresponding divs (see id = "colors-js-puns") in index.html; so it's not perfect. But since
-// I wanted to change the wording in the list options to remove the redundant references to the 
-// theme, this is at least a way of removing lots of hard-coded data from the function.
+// It still has hard-coded key/values here that have to match the html for the
+// corresponding divs (see id = "colors-js-puns") in index.html; so it's not perfect. 
 const tShirtColors = {
 	js_puns: [["cornflowerblue","Corn Flower Blue"],
 					  ["darkslategrey","Dark Slate Grey"],
 					  ["gold","Gold"],
-					  ["cadburyspurple","Cadbury's Purple"]],
+					  ["cadburyspurple","Cadbury's Purple"]], // that's my favourite colour.
 	heart_js: [["tomato","Tomato"],
 						 ["steelblue","Steel Blue"],
 						 ["dimgrey","Dim Grey"],
-						 ["cadburyspurple","Cadbury's Purple"]]
-}
+						 ["cadburyspurple","Cadbury's Purple"]] // google it if you need to...
+						 																				// then it will become your favourite
+}																										// colour too.
 
 let errors = {
-	nameErrors: [],
-	emailErrors: [],
-	activitiesError: [],
-	creditCairdErrors: [],
-	zipCodeErrors: [],
-	cvvErrors: [],
+	nameErrors: null,
+	emailErrors: null,
+	activitiesError: null,
+	creditCairdErrors: null,
+	zipCodeErrors: null,
+	cvvErrors: null,
 }
 
 const thereAreErrors = () => {
-	for (let [key,value] of Object.entries(errors)) { // yes, I had to look that up
+	for (let [key,value] of Object.entries(errors)) { // and yes, I did have to look that up
+		if (value === null) {
+			return true;
+		}
 		if (value.length > 0) {
 			return true;
 		}
 	}
 	return false;
 }
+
 
 /*************************************************************** 
 	GENERIC ERROR PROCESSING
@@ -116,6 +119,7 @@ const setUpBasicInfo = () => {
 	nameField.focus();
 	jobRoleOtherInput.style.display = 'none';
 	jobRoleOtherLabel.style.display = 'none';
+	emailField.title=""; // Disables the HTML default to keep everything in-Project
 	jobRoleList.addEventListener('change',onRoleSelect,false);
 	nameField.addEventListener('input',handleNameFieldInput,false);
 	nameField.addEventListener('blur',handleNameFieldBlur,false);
@@ -162,7 +166,7 @@ const handleNameFieldInput = (event) => {
 const handleNameFieldBlur = (event) => {
 	clearErrorsDiv(nameField.parentNode);
 	const name = nameField.value;
-	if (!isValidUserName(name) && errors.nameErrors.length > 0) {
+	if (!isValidUserName(name)) {
 		nameField.style.backgroundColor = "red";
 	}
 }
@@ -184,7 +188,7 @@ const handleEmailFieldInput = (event) => {
 
 const handleEmailFieldBlur = (event) => {
 	const email = emailField.value;
-	if (!isValidEmail(email) && errors.emailErrors.length > 0) {
+	if (!isValidEmail(email)) {
 		emailField.style.backgroundColor = "red";
 		emailField.classList.add('is-invalid');
 	}
@@ -242,11 +246,9 @@ const handleActivitiesClick = (event) => {
 	const target = event.target;
 	detectClashingActivities(target);
 	const cost = calculateCost();
-	console.log(`errors.activitiesError before: ${errors.activitiesError}`)
 	if (!setCostDivDisplay(cost)) {
 		errors.activitiesError.push("You must select one or more activities.");
 	}
-	console.log(`errors.activitiesError after: ${errors.activitiesError}`)
 	displayErrorsDiv(activitiesFieldset,"activitiesError");
 }
 
@@ -338,7 +340,7 @@ const handleCreditCairdNumberInput = (event) => {
 
 const handleCreditCairdFieldBlur = (event) => {
 	const number = creditCairdField.value;
-	if (!isValidCreditCairdNumber(number) && errors.creditCairdErrors.length > 0) {
+	if (!isValidCreditCairdNumber(number)) {
 		creditCairdField.style.backgroundColor = "red";
 	}
 }
@@ -369,7 +371,7 @@ const handleZipCodeInput = (event) => {
 
 const handleZipCodeFieldBlur = (event) => {
 	const number = zipCodeField.value;
-	if (!isValidZipCode(number) && errors.zipCodeErrors.length > 0) {
+	if (!isValidZipCode(number)) {
 		zipCodeField.style.backgroundColor = "red";
 	}
 }
@@ -400,7 +402,7 @@ const handleCVVinput = (event) => {
 
 const handleCVVfieldBlur = (event) => {
 	const number = cvvField.value;
-	if (!isValidCVV(number) && errors.cvvErrors.length > 0) {
+	if (!isValidCVV(number)) {
 		cvvField.style.backgroundColor = "red";
 	}
 }
@@ -445,13 +447,15 @@ const onPaymentOptionSelect = () => {
 	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger.
 */
 const onSubmitting = (event) => {
-	// refactor all the event handlers: pull out the validating code into separate functions
-	// call those functions from within the event handlers
-	// make sure that errorDivDisplay is called from within them too
-	// then call the same functions from here
-	event.preventDefault();
-	console.log(`submitting: ${form}`);
-	// console.log()
+	if (thereAreErrors()) {
+		event.preventDefault();
+	}
+	// event.preventDefault();
+	console.log(`valid null CVV.... ${isValidCVV(null)}`)
+	// if (thereAreErrors()) {
+	// 	event.preventDefault();
+	// 	console.log('there are errors.');
+	// }
 }
 
 
