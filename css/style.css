@@ -131,18 +131,7 @@ option {
   Validation Styles
 ==================================== */
 
-.is-valid {
-	border-color: green;
-	background-color: lightgreen;
-}
-.is-in-progress {
-	border-color: goldenrod;
-	background-color: palegoldenrod;
-}
-.is-invalid {
-	border-color: red;
-	background-color: crimson;
-}
+
 
 .error-display {
 	width: 100%;

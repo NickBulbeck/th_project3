@@ -59,19 +59,16 @@ const tShirtColors = {
 }																										// colour too.
 
 let errors = {
-	nameErrors: null,
-	emailErrors: null,
-	activitiesError: null,
-	creditCairdErrors: null,
-	zipCodeErrors: null,
-	cvvErrors: null,
+	nameErrors: [],
+	emailErrors: [],
+	activitiesError: [],
+	creditCairdErrors: [],
+	zipCodeErrors: [],
+	cvvErrors: [],
 }
 
 const thereAreErrors = () => {
 	for (let [key,value] of Object.entries(errors)) { // and yes, I did have to look that up
-		if (value === null) {
-			return true;
-		}
 		if (value.length > 0) {
 			return true;
 		}
@@ -137,51 +134,64 @@ const onRoleSelect = () => {
 	}
 }
 
-const handleNameFieldInput = (event) => {
-	const inputSoFar = nameField.value;
-	errors.nameErrors = [];
+const validateUserName = (inputSoFar) => {
+	let errors = [];
 	if (isValidUserName(inputSoFar)) {
-		nameField.style.backgroundColor = "#80ff80";
-		clearErrorsDiv(nameField.parentNode);
+		return errors;
 	} else if (isBlank(inputSoFar)) {
-		errors.nameErrors.push("Name cannot be left blank.");
-		nameField.style.backgroundColor = "goldenrod";
+		errors.push("Name cannot be left blank.");
 	} else {
 		if (containsNumbers(inputSoFar)) {
-			errors.nameErrors.push("Name cannot contain numbers.");
-			nameField.style.backgroundColor = "goldenrod";
+			errors.push("Name cannot contain numbers.");
 		}
 		if (containsNonAlphaNumericExceptSpaces(inputSoFar)) {
-			errors.nameErrors.push("Name cannot contain non-alphanumeric characters.")
-			nameField.style.backgroundColor = "goldenrod";
+			errors.push("Name cannot contain non-alphanumeric characters.")
 		}
 		if (containsOnlySpaces(inputSoFar)) {
-			errors.nameErrors.push("Name cannot contain only spaces.")
-			nameField.style.backgroundColor = "goldenrod";
+			errors.push("Name cannot contain only spaces.")
 		}
 	}
-	displayErrorsDiv(nameField,"nameErrors");
+	return errors;
+}
+
+const handleNameFieldInput = (event) => {
+	const inputSoFar = nameField.value;
+	nameField.style.backgroundColor = "goldenrod";
+	clearErrorsDiv("nameErrors");
+	errors.nameErrors = validateUserName(inputSoFar);
+	if (errors.nameErrors.length === 0) {
+		nameField.style.backgroundColor = "#80ff80";
+	} else {
+		displayErrorsDiv(nameField,"nameErrors");
+	}
 }
 
 const handleNameFieldBlur = (event) => {
-	clearErrorsDiv(nameField.parentNode);
 	const name = nameField.value;
 	if (!isValidUserName(name)) {
-		nameField.style.backgroundColor = "red";
+		nameField.style.backgroundColor = "";
 	}
 }
 
-const handleEmailFieldInput = (event) => {
-	errors.emailErrors = []
-	let inputSoFar = emailField.value;
+const validateEmail = (inputSoFar) => {
+	let errors = [];
 	if (isValidEmail(inputSoFar)) {
-		emailField.style.backgroundColor = "#80ff80";
-	} else if (isBlank(inputSoFar)) {
-		errors.emailErrors.push("Email cannot be left blank.");
-		emailField.style.backgroundColor = "goldenrod";
+		return errors;
+	}
+	if (isBlank(inputSoFar)) {
+		errors.push("Email cannot be left blank.");
 	} else {
-		errors.emailErrors.push("Email address is invalid.")
-		emailField.style.backgroundColor = "goldenrod";
+		errors.push("Valid examples: valid@email.com, valid@email.me.net");
+	}
+	return errors;
+}
+
+const handleEmailFieldInput = (event) => {
+	emailField.style.backgroundColor = "goldenrod";
+	let inputSoFar = emailField.value;
+	errors.emailErrors = validateEmail(inputSoFar);
+	if (errors.emailErrors.length === 0) {
+		emailField.style.backgroundColor = "#80ff80";
 	}
 	displayErrorsDiv(emailField,"emailErrors");
 }
@@ -189,8 +199,7 @@ const handleEmailFieldInput = (event) => {
 const handleEmailFieldBlur = (event) => {
 	const email = emailField.value;
 	if (!isValidEmail(email)) {
-		emailField.style.backgroundColor = "red";
-		emailField.classList.add('is-invalid');
+		emailField.style.backgroundColor = "";
 	}
 }
 
@@ -241,11 +250,16 @@ const setUpActivities = () => {
 	}
 }
 
+
 const handleActivitiesClick = (event) => {
 	errors.activitiesError = [];
 	const target = event.target;
 	detectClashingActivities(target);
 	const cost = calculateCost();
+	// Based on the HTML as it currently is, if cost is zero then nothing has been clicked.
+	// This will do for now, but I realise it's brittle - it would break in future if another,
+	// free, activity were added, or if an existing one were made free. See also comment for
+	// onSubmitting function
 	if (!setCostDivDisplay(cost)) {
 		errors.activitiesError.push("You must select one or more activities.");
 	}
@@ -313,58 +327,77 @@ const setUpPaymentInfo = () => {
 	document.getElementById('cvv').addEventListener('blur',handleCVVfieldBlur,false);
 }
 
-const handleCreditCairdNumberInput = (event) => {
-	errors.creditCairdErrors = [];
-	creditCairdField.style.backgroundColor = "goldenrod";
-	let inputSoFar = creditCairdField.value;
+const validateCreditCairdNumber = (inputSoFar) => {
+	let errors = [];
 	if (isValidCreditCairdNumber(inputSoFar)) {
-		creditCairdField.style.backgroundColor = "#80ff80";
-	} else if (isBlank(inputSoFar)) {
-			errors.creditCairdErrors.push("Credit caird number cannot be left blank.");
+		return errors;
+	}
+	if (isBlank(inputSoFar)) {
+			errors.push("Credit caird number cannot be left blank.");
 	} else {
 		if (containsLetters(inputSoFar)) {
-			errors.creditCairdErrors.push("Credit caird number cannot contain letters.");
+			errors.push("Credit caird number cannot contain letters.");
 		}
 		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
-			errors.creditCairdErrors.push("Credit caird number cannot contain non-alphanumeric characters.")
+			errors.push("Credit caird number cannot contain non-alphanumeric characters.")
 		}
 		if (hasTooFewDigits(inputSoFar,13)){
-			errors.creditCairdErrors.push("Credit caird number has fewer than 13 digits.");
+			errors.push("Credit caird number has fewer than 13 digits.");
 		}
 		if (hasTooManyDigits(inputSoFar,16)){
-			errors.creditCairdErrors.push("Credit caird number has more than 16 digits.");
+			errors.push("Credit caird number has more than 16 digits.");
 		}
 	}
+	return errors;
+}
+
+const handleCreditCairdNumberInput = (event) => {
+	creditCairdField.style.backgroundColor = "goldenrod";
+	let inputSoFar = creditCairdField.value;
+	errors.creditCairdErrors = validateCreditCairdNumber(inputSoFar);
+	if (errors.creditCairdErrors.length === 0) {
+		creditCairdField.style.backgroundColor = "#80ff80";
+	} 
 	displayErrorsDiv(creditCairdField,"creditCairdErrors");
 }
 
 const handleCreditCairdFieldBlur = (event) => {
 	const number = creditCairdField.value;
 	if (!isValidCreditCairdNumber(number)) {
-		creditCairdField.style.backgroundColor = "red";
+		creditCairdField.style.backgroundColor = "";
 	}
 }
 
-
-const handleZipCodeInput = (event) => {
-	errors.zipCodeErrors = [];
-	let inputSoFar = zipCodeField.value;
-	zipCodeField.style.backgroundColor = "goldenrod";
+const validateZipCode = (inputSoFar) => {
+	let errors = [];
 	if (isValidZipCode(inputSoFar)) {
-		zipCodeField.style.backgroundColor = "#80ff80";
+		return errors;
+	}
+	if (isBlank(inputSoFar)) {
+		errors.push("Zip code cannot be left blank.");
 	} else {
 		if (containsLetters(inputSoFar)) {
-			errors.zipCodeErrors.push("Zip Code cannot contain letters.");
+			errors.push("Zip Code cannot contain letters.");
 		}
 		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
-			errors.zipCodeErrors.push("Zip Code cannot contain non-alphanumeric characters.")
+			errors.push("Zip Code cannot contain non-alphanumeric characters.");
 		}
 		if (hasTooFewDigits(inputSoFar,5)){
-			errors.zipCodeErrors.push("Zip Code has fewer than 5 digits.");
+			errors.push("Zip Code has fewer than 5 digits.");
 		}
 		if (hasTooManyDigits(inputSoFar,5)){
-			errors.zipCodeErrors.push("Zip Code has more than 5 digits.");
+			errors.push("Zip Code has more than 5 digits.");
 		}
+	}
+	return errors;
+}
+
+const handleZipCodeInput = (event) => {
+	let inputSoFar = zipCodeField.value;
+	zipCodeField.style.backgroundColor = "goldenrod";
+	errors.zipCodeErrors = validateZipCode(inputSoFar);
+	if (errors.zipCodeErrors.length === 0) {
+		zipCodeField.style.backgroundColor = "#80ff80";
 	}
 	displayErrorsDiv(zipCodeField,"zipCodeErrors");
 }
@@ -372,30 +405,40 @@ const handleZipCodeInput = (event) => {
 const handleZipCodeFieldBlur = (event) => {
 	const number = zipCodeField.value;
 	if (!isValidZipCode(number)) {
-		zipCodeField.style.backgroundColor = "red";
+		zipCodeField.style.backgroundColor = "";
 	}
 }
 
+const validateCVV = (inputSoFar) => {
+	let errors = [];
+	if (isValidCVV(inputSoFar)) {
+		return errors;
+	}
+	if (isBlank(inputSoFar)) {
+		errors.push('CVV cannot be left blank.');
+	} else {
+		if (containsLetters(inputSoFar)) {
+			errors.push("CVV cannot contain letters.");
+		}
+		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
+			errors.push("CVV cannot contain non-alphanumeric characters.")
+		}
+		if (hasTooFewDigits(inputSoFar,3)){
+			errors.push("CVV has fewer than 3 digits.");
+		}
+		if (hasTooManyDigits(inputSoFar,3)){
+			errors.push("CVV has more than 3 digits.");
+		}
+	}
+	return errors;
+}
 
 const handleCVVinput = (event) => {
 	let inputSoFar = cvvField.value;
-	errors.cvvErrors = [];
 	cvvField.style.backgroundColor = "goldenrod";
-	if (isValidCVV(inputSoFar)) {
+	errors.cvvErrors = validateCVV(inputSoFar);
+	if (errors.cvvErrors.length === 0) {
 		cvvField.style.backgroundColor = "#80ff80";
-	} else {
-		if (containsLetters(inputSoFar)) {
-			errors.cvvErrors.push("CVV cannot contain letters.");
-		}
-		if (containsNonAlphaNumericIncludingSpaces(inputSoFar)) {
-			errors.cvvErrors.push("CVV cannot contain non-alphanumeric characters.")
-		}
-		if (hasTooFewDigits(inputSoFar,3)){
-			errors.cvvErrors.push("CVV has fewer than 3 digits.");
-		}
-		if (hasTooManyDigits(inputSoFar,3)){
-			errors.cvvErrors.push("CVV has more than 3 digits.");
-		}
 	}
 	displayErrorsDiv(cvvField,"cvvErrors");
 }
@@ -403,7 +446,7 @@ const handleCVVinput = (event) => {
 const handleCVVfieldBlur = (event) => {
 	const number = cvvField.value;
 	if (!isValidCVV(number)) {
-		cvvField.style.backgroundColor = "red";
+		cvvField.style.backgroundColor = "";
 	}
 }
 
@@ -419,6 +462,9 @@ const onPaymentOptionSelect = () => {
 		document.getElementById('zip').value = '';
 		document.getElementById('cvv').value = '';
 		paypalDiv.style.display = 'none';
+		cvvField.style.backgroundColor = "";
+		creditCairdField.style.backgroundColor = "";
+		zipCodeField.style.backgroundColor = "";
 	}
 	const thenShow = {
 		'Bitcoin': function() {
@@ -447,15 +493,28 @@ const onPaymentOptionSelect = () => {
 	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger.
 */
 const onSubmitting = (event) => {
+	errors.nameErrors = validateUserName(nameField.value);
+	displayErrorsDiv(nameField,"nameErrors");
+	errors.emailErrors = validateEmail(emailField.value);
+	displayErrorsDiv(emailField,"emailErrors");
+	if (calculateCost() === 0) {
+// See comment for handleActivitiesClick function
+		errors.activitiesError = ["You must select one or more activities."];
+	}
+	displayErrorsDiv(activitiesFieldset,"activitiesError");
+	if (!(paymentOption.value === "PayPal" || paymentOption === "Bitcoin")) {
+		errors.creditCairdErrors = validateCreditCairdNumber(creditCairdField.value);
+		displayErrorsDiv(creditCairdField,"creditCairdErrors");
+		errors.zipCodeErrors = validateZipCode(zipCodeField.value);
+		displayErrorsDiv(zipCodeField,"zipCodeErrors");
+		errors.cvvErrors = validateCVV(cvvField.value);
+		displayErrorsDiv(cvvField,"cvvErrors");
+	}
 	if (thereAreErrors()) {
+		console.log(errors);
 		event.preventDefault();
 	}
-	// event.preventDefault();
-	console.log(`valid null CVV.... ${isValidCVV(null)}`)
-	// if (thereAreErrors()) {
-	// 	event.preventDefault();
-	// 	console.log('there are errors.');
-	// }
+
 }
 
 
