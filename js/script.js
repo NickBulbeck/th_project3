@@ -105,6 +105,17 @@ const displayErrorsDiv = (nodeOfInterest,errorCategory) => {
 	nodeOfInterest.parentNode.insertBefore(errorsDiv,referenceNode);
 }
 
+const setAppearance = (element,status) => {
+	const borderColours = {
+		inprogress: 'goldenrod',
+		invalid: 'crimson',
+		valid: 	'green'
+	}
+	element.style.borderColor = borderColours[status];
+	element.style.borderWidth = '4px';
+}
+
+
 
 /* BASIC INFO BOX
 	2) There's nothing in here about specific validations, so I'll just choose some:
@@ -120,8 +131,10 @@ const setUpBasicInfo = () => {
 	jobRoleList.addEventListener('change',onRoleSelect,false);
 	nameField.addEventListener('input',handleNameFieldInput,false);
 	nameField.addEventListener('blur',handleNameFieldBlur,false);
+	nameField.setAttribute('autoComplete','false');
 	emailField.addEventListener('input',handleEmailFieldInput,false);
 	emailField.addEventListener('blur',handleEmailFieldBlur,false);
+	emailField.setAttribute('autocomplete',"false");
 }
 
 const onRoleSelect = () => {
@@ -156,11 +169,11 @@ const validateUserName = (inputSoFar) => {
 
 const handleNameFieldInput = (event) => {
 	const inputSoFar = nameField.value;
-	nameField.style.backgroundColor = "goldenrod";
+	setAppearance(nameField,'inprogress');
 	clearErrorsDiv("nameErrors");
 	errors.nameErrors = validateUserName(inputSoFar);
 	if (errors.nameErrors.length === 0) {
-		nameField.style.backgroundColor = "#80ff80";
+		setAppearance(nameField,'valid');
 	} else {
 		displayErrorsDiv(nameField,"nameErrors");
 	}
@@ -169,7 +182,7 @@ const handleNameFieldInput = (event) => {
 const handleNameFieldBlur = (event) => {
 	const name = nameField.value;
 	if (!isValidUserName(name)) {
-		nameField.style.backgroundColor = "";
+		setAppearance(nameField,'invalid');
 	}
 }
 
@@ -188,19 +201,25 @@ const validateEmail = (inputSoFar) => {
 
 const handleEmailFieldInput = (event) => {
 	emailField.style.backgroundColor = "goldenrod";
+	emailField.classList.add('is-invalid');
 	let inputSoFar = emailField.value;
 	errors.emailErrors = validateEmail(inputSoFar);
 	if (errors.emailErrors.length === 0) {
 		emailField.style.backgroundColor = "#80ff80";
+		emailField.classList.remove('is-invalid');
+		emailField.classList.add('is-valid');
 	}
 	displayErrorsDiv(emailField,"emailErrors");
 }
 
 const handleEmailFieldBlur = (event) => {
-	const email = emailField.value;
-	if (!isValidEmail(email)) {
-		emailField.style.backgroundColor = "";
-	}
+	// const email = emailField.value;
+	// emailField.classList.add('blub');
+	// if (isValidEmail(email)) {
+	// 	emailField.classList.add('is-valid');
+	// } else {
+	// 	emailField.classList.add('is-invalid');
+	// }
 }
 
 
@@ -511,7 +530,6 @@ const onSubmitting = (event) => {
 		displayErrorsDiv(cvvField,"cvvErrors");
 	}
 	if (thereAreErrors()) {
-		console.log(errors);
 		event.preventDefault();
 	}
 
