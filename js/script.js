@@ -105,6 +105,9 @@ const displayErrorsDiv = (nodeOfInterest,errorCategory) => {
 	nodeOfInterest.parentNode.insertBefore(errorsDiv,referenceNode);
 }
 
+// Each field has a green border if it contains valid input
+// WHILE TYPING: the field has an amber border if the input is not yet valid
+// ONCE THE FIELD LOSES FOCUS: the border goes from amber to red if it is still invalid 
 const setAppearance = (element,status) => {
 	const borderColours = {
 		inprogress: 'goldenrod',
@@ -119,9 +122,8 @@ const setAppearance = (element,status) => {
 
 /* BASIC INFO BOX
 	2) There's nothing in here about specific validations, so I'll just choose some:
-	 - First name and surname. Capitalisation is fixed automatically.
-	 - nae numbers in the name.
-	 - Email address has stuff, followed by @, stuff,  ., stuff
+	 - Letters and spaces only in the name; don't care about case.
+	 - Email address is of the form valid@email.com, valid@email.co.uk etc
 */
 const setUpBasicInfo = () => {
 	nameField.focus();
@@ -174,9 +176,8 @@ const handleNameFieldInput = (event) => {
 	errors.nameErrors = validateUserName(inputSoFar);
 	if (errors.nameErrors.length === 0) {
 		setAppearance(nameField,'valid');
-	} else {
-		displayErrorsDiv(nameField,"nameErrors");
 	}
+	displayErrorsDiv(nameField,"nameErrors");
 }
 
 const handleNameFieldBlur = (event) => {
@@ -200,26 +201,21 @@ const validateEmail = (inputSoFar) => {
 }
 
 const handleEmailFieldInput = (event) => {
-	emailField.style.backgroundColor = "goldenrod";
-	emailField.classList.add('is-invalid');
-	let inputSoFar = emailField.value;
+	const inputSoFar = emailField.value;
+	setAppearance(emailField,'inprogress');
+	clearErrorsDiv("emailErrors");
 	errors.emailErrors = validateEmail(inputSoFar);
 	if (errors.emailErrors.length === 0) {
-		emailField.style.backgroundColor = "#80ff80";
-		emailField.classList.remove('is-invalid');
-		emailField.classList.add('is-valid');
+		setAppearance(emailField,'valid');
 	}
 	displayErrorsDiv(emailField,"emailErrors");
 }
 
 const handleEmailFieldBlur = (event) => {
-	// const email = emailField.value;
-	// emailField.classList.add('blub');
-	// if (isValidEmail(email)) {
-	// 	emailField.classList.add('is-valid');
-	// } else {
-	// 	emailField.classList.add('is-invalid');
-	// }
+	const email = emailField.value;
+	if (!isValidEmail(email)) {
+		setAppearance(emailField,"invalid");
+	}
 }
 
 
@@ -255,9 +251,6 @@ const setUpTShirt = () => {
 	1) When anything is checked, the total cost appears at the bottom of the div
 	2) When anything is checked, any conflicting activity is disabled.
 	3) When it is unchecked, the conflicting activity is re-enabled.
-
-	Have an array of all the checkboxes.
-	ToDo: add click event handler to the form
 
 */
 
@@ -371,11 +364,12 @@ const validateCreditCairdNumber = (inputSoFar) => {
 }
 
 const handleCreditCairdNumberInput = (event) => {
-	creditCairdField.style.backgroundColor = "goldenrod";
-	let inputSoFar = creditCairdField.value;
+	const inputSoFar = creditCairdField.value;
+	setAppearance(creditCairdField,"inprogress");
+	clearErrorsDiv("emailErrors");
 	errors.creditCairdErrors = validateCreditCairdNumber(inputSoFar);
 	if (errors.creditCairdErrors.length === 0) {
-		creditCairdField.style.backgroundColor = "#80ff80";
+		setAppearance(creditCairdField,"valid");
 	} 
 	displayErrorsDiv(creditCairdField,"creditCairdErrors");
 }
@@ -383,7 +377,7 @@ const handleCreditCairdNumberInput = (event) => {
 const handleCreditCairdFieldBlur = (event) => {
 	const number = creditCairdField.value;
 	if (!isValidCreditCairdNumber(number)) {
-		creditCairdField.style.backgroundColor = "";
+		setAppearance(creditCairdField,"invalid");
 	}
 }
 
@@ -412,11 +406,12 @@ const validateZipCode = (inputSoFar) => {
 }
 
 const handleZipCodeInput = (event) => {
-	let inputSoFar = zipCodeField.value;
-	zipCodeField.style.backgroundColor = "goldenrod";
+	const inputSoFar = zipCodeField.value;
+	setAppearance(zipCodeField,"inprogress");
+	clearErrorsDiv("zipCodeErrors");
 	errors.zipCodeErrors = validateZipCode(inputSoFar);
 	if (errors.zipCodeErrors.length === 0) {
-		zipCodeField.style.backgroundColor = "#80ff80";
+		setAppearance(zipCodeField,"valid");
 	}
 	displayErrorsDiv(zipCodeField,"zipCodeErrors");
 }
@@ -424,7 +419,7 @@ const handleZipCodeInput = (event) => {
 const handleZipCodeFieldBlur = (event) => {
 	const number = zipCodeField.value;
 	if (!isValidZipCode(number)) {
-		zipCodeField.style.backgroundColor = "";
+		setAppearance(zipCodeField,"invalid");
 	}
 }
 
@@ -453,11 +448,23 @@ const validateCVV = (inputSoFar) => {
 }
 
 const handleCVVinput = (event) => {
-	let inputSoFar = cvvField.value;
-	cvvField.style.backgroundColor = "goldenrod";
+/*
+const inputSoFar = emailField.value;
+setAppearance(emailField,'inprogress');
+clearErrorsDiv("emailErrors");
+errors.emailErrors = validateEmail(inputSoFar);
+if (errors.emailErrors.length === 0) {
+	setAppearance(emailField,'valid');
+}
+displayErrorsDiv(emailField,"emailErrors");
+
+*/
+	const inputSoFar = cvvField.value;
+	setAppearance(cvvField,"inprogress");
+	clearErrorsDiv("cvvErrors");
 	errors.cvvErrors = validateCVV(inputSoFar);
 	if (errors.cvvErrors.length === 0) {
-		cvvField.style.backgroundColor = "#80ff80";
+		setAppearance(cvvField,"valid");
 	}
 	displayErrorsDiv(cvvField,"cvvErrors");
 }
@@ -465,7 +472,7 @@ const handleCVVinput = (event) => {
 const handleCVVfieldBlur = (event) => {
 	const number = cvvField.value;
 	if (!isValidCVV(number)) {
-		cvvField.style.backgroundColor = "";
+		setAppearance(cvvField,"invalid");
 	}
 }
 
@@ -481,9 +488,6 @@ const onPaymentOptionSelect = () => {
 		document.getElementById('zip').value = '';
 		document.getElementById('cvv').value = '';
 		paypalDiv.style.display = 'none';
-		cvvField.style.backgroundColor = "";
-		creditCairdField.style.backgroundColor = "";
-		zipCodeField.style.backgroundColor = "";
 	}
 	const thenShow = {
 		'Bitcoin': function() {
@@ -508,8 +512,9 @@ const onPaymentOptionSelect = () => {
 }
 
 /* SUBMIT BUTTON
-	1) Error messages (if applicable) apply to the name, email, activity and credit-card fields
-	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger.
+	1) Error messages (if applicable) apply to the name, email, activity and credit-caird fields
+	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger. For testing, this
+	   must still work.
 */
 const onSubmitting = (event) => {
 	errors.nameErrors = validateUserName(nameField.value);
