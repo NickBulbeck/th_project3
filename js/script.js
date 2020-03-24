@@ -2,20 +2,7 @@
 
 	script.js contains all the official javascript for the Project 3 app.
 
-	Some thoughts about functions I'll need (in no particular order):
-
-	1) A date/time clash detector, with a decision on how generic and abstracted to
-		make it - that is, do I keep it local to this project where there are only
-		two days and two time slots, or do I make one that can detect an overlap 
-		between any two dates/times?
-	2) An event-handler on the entire form that runs a' the validations and stores an
-		array of valid/invalid stuff (with error messages, maybe)
-	3) A set of validating functions
-	4) A data.js file with error messages in
-	5) A way of storing and re-loading data?
-	6) Functions to hide/show the Colour stuff until T-Shirt design is selected
-
-	All this and much more!
+	
 
 	Easter egg... not sure yet. Current thinking is to have it replace all the text with 
 	Vogon poetry.
@@ -108,6 +95,8 @@ const displayErrorsDiv = (nodeOfInterest,errorCategory) => {
 // Each field has a green border if it contains valid input
 // WHILE TYPING: the field has an amber border if the input is not yet valid
 // ONCE THE FIELD LOSES FOCUS: the border goes from amber to red if it is still invalid 
+// The final value - 'none' - is to stop the border going red when someone clicks the
+// Douglas Adams button.
 const setAppearance = (element,status) => {
 	const borderColours = {
 		inprogress: 'goldenrod',
@@ -118,8 +107,6 @@ const setAppearance = (element,status) => {
 	element.style.borderWidth = '4px';
 }
 
-
-
 /* BASIC INFO BOX
 	2) There's nothing in here about specific validations, so I'll just choose some:
 	 - Letters and spaces only in the name; don't care about case.
@@ -127,6 +114,7 @@ const setAppearance = (element,status) => {
 */
 const setUpBasicInfo = () => {
 	nameField.focus();
+	// nameField.
 	jobRoleOtherInput.style.display = 'none';
 	jobRoleOtherLabel.style.display = 'none';
 	emailField.title=""; // Disables the HTML default to keep everything in-Project
@@ -185,6 +173,10 @@ const handleNameFieldBlur = (event) => {
 	if (!isValidUserName(name)) {
 		setAppearance(nameField,'invalid');
 	}
+	if (isBlank(name)) {
+		errors.nameErrors.push("Name cannot be left blank.");
+		displayErrorsDiv(nameField,"nameErrors");
+	}
 }
 
 const validateEmail = (inputSoFar) => {
@@ -216,6 +208,10 @@ const handleEmailFieldBlur = (event) => {
 	if (!isValidEmail(email)) {
 		setAppearance(emailField,"invalid");
 	}
+	if (isBlank(email)) {
+		errors.emailErrors.push("Email cannot be left blank.");
+		displayErrorsDiv(emailField,"emailErrors");
+	}
 }
 
 
@@ -224,6 +220,7 @@ const handleEmailFieldBlur = (event) => {
 ***************************************************************/
 
 const onColorSelect = (event) => {
+	const selectAThemeOption = tShirtTheme.firstElementChild;
 	const selectedTheme = event.target.value;
 	const colors = tShirtColors[selectedTheme];
 	// If there's no actual value matching a key in the tShirtColors object, keep the
@@ -237,7 +234,8 @@ const onColorSelect = (event) => {
 		html += `<option value="${colors[i][0]}">${colors[i][1]}</option>`
 	}
 	colorSelectList.innerHTML = html;
-	colorsAvailable.style.display='';
+	colorsAvailable.style.display = '';
+	selectAThemeOption.style.display = 'none';
 }
 
 const setUpTShirt = () => {
@@ -331,6 +329,10 @@ const setUpPaymentInfo = () => {
 	paymentOption.addEventListener('change',onPaymentOptionSelect,false)
 	paypalDiv.style.display = 'none';
 	bitcoinDiv.style.display = 'none';
+	const selectOption = paymentOption.querySelector('option[value="select method"]');
+	const creditCairdOption = paymentOption.querySelector('option[value="Credid Caird"]');
+	creditCairdField.selected = true;
+	paymentOption.removeChild(selectOption);
 	document.getElementById('cc-num').addEventListener('input',handleCreditCairdNumberInput,false);
 	document.getElementById('cc-num').addEventListener('blur',handleCreditCairdFieldBlur ,false);
 	document.getElementById('zip').addEventListener('input',handleZipCodeInput,false);
@@ -379,6 +381,10 @@ const handleCreditCairdFieldBlur = (event) => {
 	if (!isValidCreditCairdNumber(number)) {
 		setAppearance(creditCairdField,"invalid");
 	}
+	if (isBlank(number)) {
+		errors.creditCairdErrors.push("Credit caird number cannot be left blank.");
+		displayErrorsDiv(creditCairdField,"creditCairdErrors");
+	}
 }
 
 const validateZipCode = (inputSoFar) => {
@@ -421,6 +427,10 @@ const handleZipCodeFieldBlur = (event) => {
 	if (!isValidZipCode(number)) {
 		setAppearance(zipCodeField,"invalid");
 	}
+	if (isBlank(number)) {
+		errors.zipCodeErrors.push("Zip Code number cannot be left blank.");
+		displayErrorsDiv(zipCodeField,"zipCodeErrors");
+	}
 }
 
 const validateCVV = (inputSoFar) => {
@@ -448,17 +458,6 @@ const validateCVV = (inputSoFar) => {
 }
 
 const handleCVVinput = (event) => {
-/*
-const inputSoFar = emailField.value;
-setAppearance(emailField,'inprogress');
-clearErrorsDiv("emailErrors");
-errors.emailErrors = validateEmail(inputSoFar);
-if (errors.emailErrors.length === 0) {
-	setAppearance(emailField,'valid');
-}
-displayErrorsDiv(emailField,"emailErrors");
-
-*/
 	const inputSoFar = cvvField.value;
 	setAppearance(cvvField,"inprogress");
 	clearErrorsDiv("cvvErrors");
@@ -473,6 +472,10 @@ const handleCVVfieldBlur = (event) => {
 	const number = cvvField.value;
 	if (!isValidCVV(number)) {
 		setAppearance(cvvField,"invalid");
+	}
+	if (isBlank(number)) {
+		errors.cvvErrors.push("CVV number cannot be left blank.");
+		displayErrorsDiv(cvvField,"cvvErrors");
 	}
 }
 
@@ -512,12 +515,11 @@ const onPaymentOptionSelect = () => {
 }
 
 /* SUBMIT BUTTON
-	1) Error messages (if applicable) apply to the name, email, activity and credit-caird fields
-	2) To disable javascript: devtools, three dots, settings, scroll down to Debugger. For testing, this
-	   must still work.
+
 */
 const onSubmitting = (event) => {
 	errors.nameErrors = validateUserName(nameField.value);
+
 	displayErrorsDiv(nameField,"nameErrors");
 	errors.emailErrors = validateEmail(emailField.value);
 	displayErrorsDiv(emailField,"emailErrors");
@@ -539,7 +541,6 @@ const onSubmitting = (event) => {
 	}
 
 }
-
 
 setUpPaymentInfo();
 setUpBasicInfo();
