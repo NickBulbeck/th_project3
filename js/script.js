@@ -1,4 +1,4 @@
-/*************************************************************************************
+ /*************************************************************************************
 
 	script.js contains all the official javascript for the Project 3 app.
 
@@ -95,8 +95,9 @@ const displayErrorsDiv = (nodeOfInterest,errorCategory) => {
 // Each field has a green border if it contains valid input
 // WHILE TYPING: the field has an amber border if the input is not yet valid
 // ONCE THE FIELD LOSES FOCUS: the border goes from amber to red if it is still invalid 
-// The final value - 'none' - is to stop the border going red when someone clicks the
-// Douglas Adams button.
+
+
+
 const setAppearance = (element,status) => {
 	const borderColours = {
 		inprogress: 'goldenrod',
@@ -474,7 +475,7 @@ const handleCVVfieldBlur = (event) => {
 		setAppearance(cvvField,"invalid");
 	}
 	if (isBlank(number)) {
-		errors.cvvErrors.push("CVV number cannot be left blank.");
+		errors.cvvErrors.push("CVV cannot be left blank.");
 		displayErrorsDiv(cvvField,"cvvErrors");
 	}
 }
@@ -496,7 +497,7 @@ const onPaymentOptionSelect = () => {
 		'Bitcoin': function() {
 									bitcoinDiv.style.display = 'inherit';
 									bitcoinDiv.innerHTML = `<p>We'll take you to the Coinbase site to set up your billing information when you click "Register" below.</p>
-									  <p>All Bitcoin transactions will be final (because obviously).</p>`
+									  <p>Due to the nature of Bitcoin transactions, all such transactions will be final.</p>`
 							 },
 		'PayPal': function() {
 								paypalDiv.style.display = 'inherit';
@@ -517,9 +518,25 @@ const onPaymentOptionSelect = () => {
 /* SUBMIT BUTTON
 
 */
-const onSubmitting = (event) => {
-	errors.nameErrors = validateUserName(nameField.value);
 
+const getActiveInputs = () => {
+	const activeInputList = [nameField,emailField];
+	if (paymentOption.value === "Credit Caird")	{
+		activeInputList.push(creditCairdField);
+		activeInputList.push(zipCodeField);
+		activeInputList.push(cvvField);
+	}
+	return activeInputList;
+}
+
+
+
+const onSubmitting = (event) => {
+	//TEST
+	console.log(getActiveInputs());
+	//END-TEST
+	errors.nameErrors = validateUserName(nameField.value);
+	
 	displayErrorsDiv(nameField,"nameErrors");
 	errors.emailErrors = validateEmail(emailField.value);
 	displayErrorsDiv(emailField,"emailErrors");
@@ -528,7 +545,7 @@ const onSubmitting = (event) => {
 		errors.activitiesError = ["You must select one or more activities."];
 	}
 	displayErrorsDiv(activitiesFieldset,"activitiesError");
-	if (!(paymentOption.value === "PayPal" || paymentOption === "Bitcoin")) {
+	if (paymentOption.value === "Credit Caird") {
 		errors.creditCairdErrors = validateCreditCairdNumber(creditCairdField.value);
 		displayErrorsDiv(creditCairdField,"creditCairdErrors");
 		errors.zipCodeErrors = validateZipCode(zipCodeField.value);
