@@ -44,6 +44,8 @@ const tShirtColors = {
 }																										// colour too.
 
 // More than one error can potentially be displayed for a given input:
+// Also, a good ToDo would be to re-factor so that ALL the errors for each input are
+// held in this object, rather than being set up within the respective functions.
 let errors = {
 	nameErrors: [],
 	emailErrors: [],
