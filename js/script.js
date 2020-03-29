@@ -30,7 +30,7 @@ const form = document.getElementsByTagName('form')[0];
 // object.
 // It still has hard-coded key/values here that have to match the html for the
 // corresponding divs (see id = "colors-js-puns") in index.html; so it's not perfect.
-// The extra colour (Cadbury's purple) is added as a proof of concept.
+// The extra colour (Cadbury's purple) is added as a proof of concept. Robert M. did OK this!
 const tShirtColors = {
 	js_puns: [["cornflowerblue","Corn Flower Blue"],
 					  ["darkslategrey","Dark Slate Grey"],
