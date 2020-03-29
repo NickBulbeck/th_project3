@@ -1,8 +1,3 @@
-Final tasks: 
-1) Blur event may need to run the validations for the field, so that if you enter a field then leave it without input, you don't just get a red border, you get the warning blank warning.
-2) If you submit the form and there are errors - specifically, blank stuff - you should get the red border. At the moment you just get the warning.
+Points to note:
 
-
-
-
- 
+- I've gone for a Red/Amber/Green validation: green for a valid field, amber for an invalid one that the user is still working on, and red for an invalid one. All fields are fully validated in real time.
