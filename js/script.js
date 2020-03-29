@@ -1,11 +1,8 @@
  /*************************************************************************************
 
-	script.js contains all the official javascript for the Project 3 app.
-
-	
-
-	Easter egg... not sure yet. Current thinking is to have it replace all the text with 
-	Vogon poetry.
+	script.js contains all the "business logic" for the Project 3 app.
+	validations.js is a short file containing generic regex code that might in theory be re-used.
+	babelFish.js contains the Douglas-Admas-themed easter egg. This one's quite simple.
 
 **************************************************************************************/
 const tShirtTheme = document.getElementById('theme');
@@ -28,16 +25,17 @@ const activitiesFieldset = document.getElementsByClassName('activities')[0];
 const activities = activitiesFieldset.getElementsByTagName('input');
 const form = document.getElementsByTagName('form')[0];
 
-// The idea of the next object (which would be part of a database in real life, probably) is to keep
+// The idea of the next object (which would be part of a database in real life) is to keep
 // source data separate from the logic. The onColorSelect() function displays whatever is in this
 // object.
 // It still has hard-coded key/values here that have to match the html for the
-// corresponding divs (see id = "colors-js-puns") in index.html; so it's not perfect. 
+// corresponding divs (see id = "colors-js-puns") in index.html; so it's not perfect.
+// The extra colour (Cadbury's purple) is added as a proof of concept.
 const tShirtColors = {
 	js_puns: [["cornflowerblue","Corn Flower Blue"],
 					  ["darkslategrey","Dark Slate Grey"],
 					  ["gold","Gold"],
-					  ["cadburyspurple","Cadbury's Purple"]], // that's my favourite colour.
+					  ["cadburyspurple","Cadbury's Purple"]], // it's my favourite colour.
 	heart_js: [["tomato","Tomato"],
 						 ["steelblue","Steel Blue"],
 						 ["dimgrey","Dim Grey"],
@@ -45,6 +43,7 @@ const tShirtColors = {
 						 																				// then it will become your favourite
 }																										// colour too.
 
+// More than one error can potentially be displayed for a given input:
 let errors = {
 	nameErrors: [],
 	emailErrors: [],
@@ -54,6 +53,7 @@ let errors = {
 	cvvErrors: [],
 }
 
+// Even a single error should prevent the form from submitting:
 const thereAreErrors = () => {
 	for (let [key,value] of Object.entries(errors)) { // and yes, I did have to look that up
 		if (value.length > 0) {
@@ -69,7 +69,6 @@ const thereAreErrors = () => {
 ***************************************************************/
 
 const clearErrorsDiv = (errorCategory) => {
-	//test
 	const obsoleteDiv = document.getElementById(errorCategory);
 	if (obsoleteDiv) {
 		obsoleteDiv.parentNode.removeChild(obsoleteDiv);
@@ -92,11 +91,9 @@ const displayErrorsDiv = (nodeOfInterest,errorCategory) => {
 	nodeOfInterest.parentNode.insertBefore(errorsDiv,referenceNode);
 }
 
-// Each field has a green border if it contains valid input
+// Each field has a green border if it contains valid input.
 // WHILE TYPING: the field has an amber border if the input is not yet valid
 // ONCE THE FIELD LOSES FOCUS: the border goes from amber to red if it is still invalid 
-
-
 
 const setAppearance = (element,status) => {
 	const borderColours = {
@@ -109,13 +106,13 @@ const setAppearance = (element,status) => {
 }
 
 /* BASIC INFO BOX
-	2) There's nothing in here about specific validations, so I'll just choose some:
-	 - Letters and spaces only in the name; don't care about case.
-	 - Email address is of the form valid@email.com, valid@email.co.uk etc
+	1) There's nothing in here about specific validations, so I'll just choose some:
+	 - Letters and spaces only in the name;
+	 - We don't care about case.
+	2) Email address is of the form valid@email.com, valid@email.co.uk etc
 */
 const setUpBasicInfo = () => {
 	nameField.focus();
-	// nameField.
 	jobRoleOtherInput.style.display = 'none';
 	jobRoleOtherLabel.style.display = 'none';
 	emailField.title=""; // Disables the HTML default to keep everything in-Project
@@ -226,6 +223,8 @@ const onColorSelect = (event) => {
 	const colors = tShirtColors[selectedTheme];
 	// If there's no actual value matching a key in the tShirtColors object, keep the
 	// list hidden (or hide it if it isn't already). This includes the menu option "Select Theme".
+	// This should not happen in practice, since tShirtColors is hard-coded to match the given HTML.
+	// The check is mainly here as a matter of principle.
 	if (!colors) {
 		colorsAvailable.style.display = "none";
 		return;
@@ -245,13 +244,9 @@ const setUpTShirt = () => {
 }
 
 
-// REGISTER FOR ACTIVITIES: DATE/TIME CLASH DETECTOR
-/*
-	1) When anything is checked, the total cost appears at the bottom of the div
-	2) When anything is checked, any conflicting activity is disabled.
-	3) When it is unchecked, the conflicting activity is re-enabled.
-
-*/
+/**************************************************************************
+ REGISTER FOR ACTIVITIES
+***************************************************************************/
 
 const setUpActivities = () => {
 	activitiesFieldset.addEventListener('click',handleActivitiesClick,false);
@@ -269,8 +264,7 @@ const handleActivitiesClick = (event) => {
 	const cost = calculateCost();
 	// Based on the HTML as it currently is, if cost is zero then nothing has been clicked.
 	// This will do for now, but I realise it's brittle - it would break in future if another,
-	// free, activity were added, or if an existing one were made free. See also comment for
-	// onSubmitting function
+	// free, activity were added, or if an existing one were made free.
 	if (!setCostDivDisplay(cost)) {
 		errors.activitiesError.push("You must select one or more activities.");
 	}
@@ -322,9 +316,9 @@ const setCostDivDisplay = (cost) => {
 	return true;
 }
 
-/* PAYMENT OPTIONS
-	1) Defaults to credit card
-*/
+/************************************************************************
+ PAYMENT OPTIONS
+*************************************************************************/
 
 const setUpPaymentInfo = () => {
 	paymentOption.addEventListener('change',onPaymentOptionSelect,false)
@@ -515,9 +509,9 @@ const onPaymentOptionSelect = () => {
 	thenShow[theUsersChoice]();
 }
 
-/* SUBMIT BUTTON
-
-*/
+/******************************************************************************
+ SUBMIT BUTTON
+******************************************************************************/
 
 const getActiveInputs = () => {
 	const activeInputList = [nameField,emailField];
@@ -529,14 +523,17 @@ const getActiveInputs = () => {
 	return activeInputList;
 }
 
-
-
 const onSubmitting = (event) => {
-	//TEST
-	console.log(getActiveInputs());
-	//END-TEST
-	errors.nameErrors = validateUserName(nameField.value);
-	
+// First: handle when the user submits the form without ever focusing on one or more fields.
+	const activeInputs = getActiveInputs();
+	for (let i=0; i<activeInputs.length; i++) {
+		const input = activeInputs[i];
+		if (input.value === "") {
+			setAppearance(input,"invalid");
+		}
+	}
+// Everything else that's invalid will already have been styled
+	errors.nameErrors = validateUserName(nameField.value);	
 	displayErrorsDiv(nameField,"nameErrors");
 	errors.emailErrors = validateEmail(emailField.value);
 	displayErrorsDiv(emailField,"emailErrors");
@@ -558,6 +555,10 @@ const onSubmitting = (event) => {
 	}
 
 }
+
+/************************************************************************
+	MAIN CODE
+*************************************************************************/
 
 setUpPaymentInfo();
 setUpBasicInfo();
