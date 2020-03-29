@@ -172,7 +172,7 @@ const handleNameFieldBlur = (event) => {
 		setAppearance(nameField,'invalid');
 	}
 	if (isBlank(name)) {
-		errors.nameErrors.push("Name cannot be left blank.");
+		errors.nameErrors = ["Name cannot be left blank."];
 		displayErrorsDiv(nameField,"nameErrors");
 	}
 }
@@ -207,7 +207,7 @@ const handleEmailFieldBlur = (event) => {
 		setAppearance(emailField,"invalid");
 	}
 	if (isBlank(email)) {
-		errors.emailErrors.push("Email cannot be left blank.");
+		errors.emailErrors = ["Email cannot be left blank."];
 		displayErrorsDiv(emailField,"emailErrors");
 	}
 }
@@ -225,6 +225,7 @@ const onColorSelect = (event) => {
 	// list hidden (or hide it if it isn't already). This includes the menu option "Select Theme".
 	// This should not happen in practice, since tShirtColors is hard-coded to match the given HTML.
 	// The check is mainly here as a matter of principle.
+	// I realise that "hard-coded" and "matter of principle" don't really belong together!!! :-(
 	if (!colors) {
 		colorsAvailable.style.display = "none";
 		return;
@@ -377,7 +378,7 @@ const handleCreditCairdFieldBlur = (event) => {
 		setAppearance(creditCairdField,"invalid");
 	}
 	if (isBlank(number)) {
-		errors.creditCairdErrors.push("Credit caird number cannot be left blank.");
+		errors.creditCairdErrors = ["Credit caird number cannot be left blank."];
 		displayErrorsDiv(creditCairdField,"creditCairdErrors");
 	}
 }
@@ -423,7 +424,7 @@ const handleZipCodeFieldBlur = (event) => {
 		setAppearance(zipCodeField,"invalid");
 	}
 	if (isBlank(number)) {
-		errors.zipCodeErrors.push("Zip Code number cannot be left blank.");
+		errors.zipCodeErrors = ["Zip Code number cannot be left blank."];
 		displayErrorsDiv(zipCodeField,"zipCodeErrors");
 	}
 }
@@ -469,7 +470,7 @@ const handleCVVfieldBlur = (event) => {
 		setAppearance(cvvField,"invalid");
 	}
 	if (isBlank(number)) {
-		errors.cvvErrors.push("CVV cannot be left blank.");
+		errors.cvvErrors = ["CVV cannot be left blank."];
 		displayErrorsDiv(cvvField,"cvvErrors");
 	}
 }
